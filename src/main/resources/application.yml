@@ -1,0 +1,26 @@
+app:
+    frontend-url: http://localhost:4200
+    group: gael
+
+spring:
+    security:
+        oauth2:
+            client:
+                registration:
+                    gitlab:
+                        client-id: 2d9cbf40bac233a87d0acc87529812aec1d6a9762f463c3399f645d994dad292
+                        client-secret: gloas-a38a6166ffba4dd38facc53efbeab59e72c07f3eea3c11cc2a2482f02a6ed67f
+                        scope:
+                            - api
+                        redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+                        authorization-grant-type: authorization_code
+                        client-name: GitLab
+                        provider: gitlab
+                provider:
+                    gitlab:
+                        api: https://gitlab.thalesdigital.io/api/v4
+                        authorization-uri: https://gitlab.thalesdigital.io/oauth/authorize
+                        token-uri: https://gitlab.thalesdigital.io/oauth/token
+                        user-info-uri: https://gitlab.thalesdigital.io/api/v4/user
+                        graphql: https://gitlab.thalesdigital.io/api/graphql
+                        user-name-attribute: username

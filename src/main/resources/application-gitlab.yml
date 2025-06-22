@@ -1,0 +1,26 @@
+app:
+    frontend-url: http://localhost:4200
+    group: timespenttracker
+
+spring:
+    security:
+        oauth2:
+            client:
+                registration:
+                    gitlab:
+                        client-id: 451f1b688bac8d51e2220d56458b24eecad7b7d69c0635295fd4280e071b2ead
+                        client-secret: gloas-887aa6cfee6f1cea71601fa8b06afaf57910f9240b69057511115e08a9c3ce31
+                        scope:
+                            - api
+                        redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+                        authorization-grant-type: authorization_code
+                        client-name: GitLab
+                        provider: gitlab
+                provider:
+                    gitlab:
+                        api: https://gitlab.com/api/v4
+                        authorization-uri: https://gitlab.com/oauth/authorize
+                        token-uri: https://gitlab.com/oauth/token
+                        user-info-uri: https://gitlab.com/api/v4/user
+                        graphql: https://gitlab.com/api/graphql
+                        user-name-attribute: username

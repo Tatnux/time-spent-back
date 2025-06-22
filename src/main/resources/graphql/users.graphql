@@ -1,0 +1,17 @@
+query IterationsByGroup($group: ID!) {
+    group(fullPath: $group) {
+        name
+        groupMembers {
+            nodes {
+                user {
+                    id
+                    name
+                    username
+                    publicEmail
+                    avatarUrl
+                    lastActivityOn
+                }
+            }
+        }
+    }
+}

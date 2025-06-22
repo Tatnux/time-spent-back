@@ -1,0 +1,2 @@
+schema: gitlab_schema.json
+documents: '**/*.graphql'

@@ -1,0 +1,14 @@
+query IterationsByGroup($group: ID!, $iids: [String!]) {
+    group(fullPath: $group) {
+        issues(iids: $iids) {
+            nodes {
+                id
+                iid
+                webUrl
+                state
+                projectId
+                title
+            }
+        }
+    }
+}

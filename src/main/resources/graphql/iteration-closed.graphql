@@ -1,0 +1,15 @@
+query IterationsByGroup($group: ID!) {
+    group(fullPath: $group) {
+        iterations(sort: CADENCE_AND_DUE_DATE_DESC, state: closed, first: 11) {
+            nodes {
+                id
+                dueDate
+                startDate
+                state
+                iterationCadence {
+                    title
+                }
+            }
+        }
+    }
+}
