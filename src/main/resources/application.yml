@@ -2,6 +2,9 @@ app:
     frontend-url: http://localhost:4200
     group: gael
 
+server:
+    port: 8060
+
 spring:
     security:
         oauth2:
