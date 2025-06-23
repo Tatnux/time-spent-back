@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDate;
@@ -129,6 +131,8 @@ public class GitLabGraphQLService {
     @SneakyThrows
     private static String loadGraphQLQuery(String fileName) {
         ClassPathResource resource = new ClassPathResource("graphql/%s.graphql".formatted(fileName));
-        return Files.readString(resource.getFile().toPath(), StandardCharsets.UTF_8);
+        try (InputStream inputStream = resource.getInputStream()) {
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 }
