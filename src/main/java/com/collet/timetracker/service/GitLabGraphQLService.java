@@ -7,6 +7,8 @@ import com.collet.timetracker.models.api.user.GitlabUser;
 import com.collet.timetracker.models.api.user.GroupMemeber;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -122,10 +122,39 @@ public class GitLabGraphQLService {
 
         List<T> result = new ArrayList<>();
         for (JsonNode node : nodes) {
-            result.add(objectMapper.treeToValue(node, clazz));
+            result.add(objectMapper.treeToValue(flattenNodesRecursively(node), clazz));
         }
 
         return result;
+    }
+
+    private JsonNode flattenNodesRecursively(JsonNode node) {
+        if (node.isObject()) {
+            ObjectNode objectNode = node.deepCopy();
+            Iterator<String> fieldNames = node.fieldNames();
+
+            while (fieldNames.hasNext()) {
+                String fieldName = fieldNames.next();
+                JsonNode child = node.get(fieldName);
+
+                if (child.isObject() && child.has("nodes") && child.get("nodes").isArray()) {
+                    objectNode.set(fieldName, flattenNodesRecursively(child.get("nodes")));
+                } else if (child.isContainerNode()) {
+                    objectNode.set(fieldName, flattenNodesRecursively(child));
+                }
+            }
+            return objectNode;
+        }
+
+        if (node.isArray()) {
+            ArrayNode arrayNode = node.deepCopy();
+            for (int i = 0; i < arrayNode.size(); i++) {
+                arrayNode.set(i, flattenNodesRecursively(arrayNode.get(i)));
+            }
+            return arrayNode;
+        }
+
+        return node;
     }
 
     @SneakyThrows

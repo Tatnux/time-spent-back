@@ -13,7 +13,14 @@ query IterationsByGroup($group: ID!, $startTime: Time, $endTime: Time, $username
                     webUrl
                     state
                     projectId
-                    title
+                    title,
+                    assignees {
+                        nodes {
+                            id,
+                            name
+                            username
+                        }
+                    }
                 }
                 spentAt
                 timeSpent
