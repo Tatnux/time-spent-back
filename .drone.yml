@@ -1,0 +1,61 @@
+kind: pipeline
+type: docker
+name: build-deploy
+
+steps:
+  # Build
+  - name: build
+    image: gradle:8.14.2-jdk24
+    volumes:
+      - name: gradle-cache
+        path: /cache
+    commands:
+      - export GRADLE_USER_HOME="/cache/"
+      - export VERSION=$(./gradlew -q properties | grep "^version:" | awk '{print $2}')
+      - echo "$VERSION" > DATA_VERSION
+      - ./gradlew bootJar
+  # Test
+  - name: test
+    image: gradle:8.14.2-jdk24
+    volumes:
+      - name: gradle-cache
+        path: /cache
+    commands:
+      - export GRADLE_USER_HOME="/cache/"
+      - ./gradlew test
+  # Deploy
+  - name: deploy
+    image: docker:cli
+    environment:
+      CONTAINER_NAME: timelogs
+    volumes:
+      - name: deploy-target
+        path: /deploy
+      - name: docker-socket
+        path: /var/run/docker.sock
+    commands:
+      - cd trading-root
+      - export VERSION=$(cat DATA_VERSION)
+      - echo "📦 Version $VERSION"
+      - cp data/build/libs/timetracker-$VERSION.jar /deploy/timelogs.jar
+      - chmod 755 /deploy/timelogs.jar
+      - docker container restart $CONTAINER_NAME
+    when:
+      event:
+        - push
+        - custom
+      branch:
+        - master
+
+volumes:
+  - name: gradle-cache
+    host:
+      path: /tmp/drone-gradle-cache
+
+  - name: deploy-target
+    host:
+      path: /home/tatnux/time-spent/back
+
+  - name: docker-socket
+    host:
+      path: /var/run/docker.sock
