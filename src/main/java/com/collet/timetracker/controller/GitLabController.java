@@ -8,7 +8,6 @@ import com.collet.timetracker.models.api.user.GitlabUser;
 import com.collet.timetracker.service.GitLabActivityService;
 import com.collet.timetracker.service.GitLabGraphQLService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +23,6 @@ import java.util.List;
 @RequestMapping("/api")
 public class GitLabController {
 
-    private final OAuth2AuthorizedClientService clientService;
     private final GitLabGraphQLService service;
     private final GitLabActivityService activityService;
 
@@ -54,7 +52,7 @@ public class GitLabController {
     }
 
     @GetMapping("/iteration/closed")
-    public List<IterationNode> getClosedIteration() {
-        return this.service.getClosedIteration();
+    public List<IterationNode> getClosedIteration(@RequestParam(defaultValue = "10") int first) {
+        return this.service.getClosedIteration(first);
     }
 }

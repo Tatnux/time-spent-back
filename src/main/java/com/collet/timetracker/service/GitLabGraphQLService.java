@@ -1,7 +1,6 @@
 package com.collet.timetracker.service;
 
 import com.collet.timetracker.models.api.iteration.IterationNode;
-import com.collet.timetracker.models.api.timelogs.Issue;
 import com.collet.timetracker.models.api.timelogs.TimeLogNode;
 import com.collet.timetracker.models.api.user.GitlabUser;
 import com.collet.timetracker.models.api.user.GroupMemeber;
@@ -36,54 +35,38 @@ public class GitLabGraphQLService {
     private static final String TIME_LOGS = loadGraphQLQuery("time-logs");
     private static final String TIME_LOGS_CREATE = loadGraphQLQuery("time-logs-create");
     private static final String USERS = loadGraphQLQuery("users");
-    private static final String ACTIVITY = loadGraphQLQuery("current-user-activity");
-    private static final String ISSUE = loadGraphQLQuery("issue");
+    
+    private static final String GROUP = "group";
+    private static final String NODES = "nodes";
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${spring.security.oauth2.client.provider.gitlab.graphql}")
-    private String graphQL;
-
     @Value("${app.group}")
     private String group;
 
+    @Value("${spring.security.oauth2.client.provider.gitlab.graphql}")
+    private String graphQL;
+
     public List<GitlabUser> getUsers() {
         final LocalDate sixMonthsAgo = LocalDate.now().minusMonths(6);
-        return graphQLQuery(GroupMemeber.class, USERS, "groupMembers", Map.of(
-                "group", this.group
-        )).stream()
+        return graphQLQuery(GroupMemeber.class, USERS, "groupMembers", Map.of(GROUP, this.group)).stream()
                 .map(GroupMemeber::user)
                 .filter(gitlabUser -> gitlabUser.lastActivityOn() != null && gitlabUser.lastActivityOn().isAfter(sixMonthsAgo))
                 .toList();
     }
 
-    public String getActivity() {
-        return graphQLQuery(ACTIVITY, Collections.emptyMap());
-    }
-
-    public List<Issue> getIssues(String... ids) {
-        return graphQLQuery(Issue.class, ISSUE, "issues", Map.of(
-                "group", this.group,
-                "iids", ids
-        ));
-    }
-
-    public List<IterationNode> getClosedIteration() {
-        return graphQLQuery(IterationNode.class, ITERATION_CLOSED, "iterations", Map.of(
-                "group", this.group
-        ));
+    public List<IterationNode> getClosedIteration(int first) {
+        return graphQLQuery(IterationNode.class, ITERATION_CLOSED, "iterations", Map.of(GROUP, this.group,
+                "first", first));
     }
 
     public List<IterationNode> getCurrentIteration() {
-        return graphQLQuery(IterationNode.class, ITERATION_CURRENT, "iterations", Map.of(
-                "group", this.group
-        ));
+        return graphQLQuery(IterationNode.class, ITERATION_CURRENT, "iterations", Map.of(GROUP, this.group));
     }
 
     public List<TimeLogNode> getTimeSpentNotes(String username, String startTime, String endTime) {
-        return graphQLQuery(TimeLogNode.class, TIME_LOGS, "timelogs", Map.of(
-                "group", this.group,
+        return graphQLQuery(TimeLogNode.class, TIME_LOGS, "timelogs", Map.of(GROUP, this.group,
                 "startTime", startTime,
                 "endTime", endTime,
                 "username", username
@@ -98,7 +81,7 @@ public class GitLabGraphQLService {
         ));
     }
 
-    private String graphQLQuery(String query, Map<String, Object> variables) {
+    public String graphQLQuery(String query, Map<String, Object> variables) {
         Map<String, Object> requestPayload = Map.of(
                 "query", query,
                 "variables", variables);
@@ -114,7 +97,7 @@ public class GitLabGraphQLService {
     @SneakyThrows
     private <T> List<T> graphQLQuery(Class<T> clazz, String query, String rootField, Map<String, Object> variables) {
         JsonNode root = objectMapper.readTree(this.graphQLQuery(query, variables));
-        JsonNode nodes = root.path("data").path("group").path(rootField).path("nodes");
+        JsonNode nodes = root.path("data").path(GROUP).path(rootField).path(NODES);
 
         if (nodes.isMissingNode() || !nodes.isArray()) {
             return Collections.emptyList();
@@ -128,7 +111,7 @@ public class GitLabGraphQLService {
         return result;
     }
 
-    private JsonNode flattenNodesRecursively(JsonNode node) {
+    public JsonNode flattenNodesRecursively(JsonNode node) {
         if (node.isObject()) {
             ObjectNode objectNode = node.deepCopy();
             Iterator<String> fieldNames = node.fieldNames();
@@ -137,8 +120,8 @@ public class GitLabGraphQLService {
                 String fieldName = fieldNames.next();
                 JsonNode child = node.get(fieldName);
 
-                if (child.isObject() && child.has("nodes") && child.get("nodes").isArray()) {
-                    objectNode.set(fieldName, flattenNodesRecursively(child.get("nodes")));
+                if (child.isObject() && child.has(NODES) && child.get(NODES).isArray()) {
+                    objectNode.set(fieldName, flattenNodesRecursively(child.get(NODES)));
                 } else if (child.isContainerNode()) {
                     objectNode.set(fieldName, flattenNodesRecursively(child));
                 }

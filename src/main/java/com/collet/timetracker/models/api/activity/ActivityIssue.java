@@ -16,5 +16,5 @@ import java.util.List;
 public final class ActivityIssue {
     private Issue issue;
     private List<Activity> activities = new ArrayList<>();
-    private MergeRequest mergeRequest;
+    private List<MergeRequest> mergeRequest = new ArrayList<>();
 }

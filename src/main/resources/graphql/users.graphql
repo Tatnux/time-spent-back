@@ -1,4 +1,4 @@
-query IterationsByGroup($group: ID!) {
+query ($group: ID!) {
     group(fullPath: $group) {
         name
         groupMembers {

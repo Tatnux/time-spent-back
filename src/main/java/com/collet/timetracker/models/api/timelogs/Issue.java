@@ -12,5 +12,6 @@ public record Issue(String id,
                     @JsonAlias("web_url") String webUrl,
                     @JsonAlias("project_id") long projectId,
                     List<GitlabUser> assignees,
-                    @JsonAlias("moved_to_id") long movedToId) {
+                    boolean moved,
+                    Issue movedTo) {
 }

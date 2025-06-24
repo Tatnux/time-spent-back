@@ -1,4 +1,4 @@
-mutation TimelogCreate($issueId: IssuableID!, $timeSpent: String!, $spentAt: Time) {
+mutation ($issueId: IssuableID!, $timeSpent: String!, $spentAt: Time) {
     timelogCreate(input: { issuableId: $issueId, summary: "", timeSpent: $timeSpent, spentAt: $spentAt}) {
         errors
     }

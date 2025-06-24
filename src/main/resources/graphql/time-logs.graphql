@@ -1,4 +1,4 @@
-query IterationsByGroup($group: ID!, $startTime: Time, $endTime: Time, $username: String) {
+query ($group: ID!, $startTime: Time, $endTime: Time, $username: String) {
     group(fullPath: $group) {
         timelogs(startTime: $startTime, endTime: $endTime, username: $username) {
             pageInfo {
@@ -13,10 +13,14 @@ query IterationsByGroup($group: ID!, $startTime: Time, $endTime: Time, $username
                     webUrl
                     state
                     projectId
-                    title,
+                    title
+                    moved
+                    movedTo {
+                        id
+                    }
                     assignees {
                         nodes {
-                            id,
+                            id
                             name
                             username
                         }
