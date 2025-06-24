@@ -40,6 +40,7 @@ public class RestConfig {
 
                     return execution.execute(request, body);
                 })
+                .errorHandler(new RestErrorHandler())
                 .build();
     }
 
