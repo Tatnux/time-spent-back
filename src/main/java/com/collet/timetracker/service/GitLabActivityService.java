@@ -103,7 +103,7 @@ public class GitLabActivityService {
 
 
     private Optional<ReferencedIssue> findIssueForMergeRequest(MergeRequest mergeRequest) {
-        Pattern shortPattern = Pattern.compile("(?:closes|link to issue|to close issue)\\s+#(\\d+)", Pattern.CASE_INSENSITIVE);
+        Pattern shortPattern = Pattern.compile("(?:closes|related to|link to issue|to close issue)\\s+#(\\d+)", Pattern.CASE_INSENSITIVE);
         Matcher shortMatcher = shortPattern.matcher(mergeRequest.description());
         if (shortMatcher.find()) {
             int issueNumber = Integer.parseInt(shortMatcher.group(1));
