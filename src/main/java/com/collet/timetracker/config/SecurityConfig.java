@@ -27,10 +27,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${app.frontend-url}")
-    private String frontendUrl;
-
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+    private final OAuth2LoginSuccessHandler successHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,7 +43,7 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl(this.frontendUrl, true)
+                        .successHandler(successHandler)
                 );
 
         return http.build();
