@@ -75,7 +75,7 @@ public class GitLabGraphQLService {
 
     public String createTimeSpent(String issueId, String timeSpent, String spentAt) {
         return graphQLQuery(TIME_LOGS_CREATE, Map.of(
-                "issueId", "gid://gitlab/Issue/" + issueId,
+                "issueId", issueId,
                 "timeSpent", timeSpent,
                 "spentAt", spentAt
         ));
