@@ -1,22 +1,23 @@
 package com.collet.timetracker.service.activity.reference;
 
 import com.collet.timetracker.models.api.activity.MergeRequest;
+import com.collet.timetracker.models.api.timelogs.Issue;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 
 @AllArgsConstructor
 @EqualsAndHashCode
-public class MergeRequestBranchReference implements Reference<MergeRequest> {
+public class MergeRequestFullPathIidReference implements Reference<MergeRequest> {
 
-    private final long projectId;
-    private final String branchName;
+    private final String fullPath;
+    private final long iid;
 
     @Override
     public String graphQLQuery() {
         return """
-                mergeRequests(sourceBranches: "%s", first: 1) {
-                    nodes {
+                project(fullPath: "%s") {
+                    mergeRequest(iid: "%s") {
                         id
                         iid
                         projectId
@@ -25,24 +26,24 @@ public class MergeRequestBranchReference implements Reference<MergeRequest> {
                         description,
                         sourceBranch
                         assignees {
-                        nodes {
-                            id
-                            name
-                            username
+                            nodes {
+                                id
+                                name
+                                username
+                            }
                         }
                     }
-                    }
                 }
-               """.formatted(this.branchName);
-    }
-
-    @Override
-    public String projectId() {
-        return String.valueOf(this.projectId);
+               """.formatted(this.fullPath, this.iid);
     }
 
     @Override
     public JsonNode processJson(JsonNode node) {
-        return node.get("nodes").get(0);
+        return node.get("mergeRequest");
+    }
+
+    @Override
+    public String projectId() {
+        return null;
     }
 }

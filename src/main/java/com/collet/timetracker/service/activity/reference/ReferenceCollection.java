@@ -16,4 +16,8 @@ public class ReferenceCollection<T> {
     public void add(Reference<T> reference, Consumer<T> consumer) {
         this.map.computeIfAbsent(reference, _ -> new ArrayList<>()).add(consumer);
     }
+
+    public void clear() {
+        this.map.clear();
+    }
 }

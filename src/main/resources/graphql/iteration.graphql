@@ -1,6 +1,6 @@
-query ($group: ID!, $first: Int) {
+query ($group: ID!, $state: IterationState, $first: Int, $sort: IterationSort) {
     group(fullPath: $group) {
-        iterations(sort: CADENCE_AND_DUE_DATE_DESC, state: closed, first: $first) {
+        iterations(sort: $sort, state: $state, first: $first) {
             nodes {
                 id
                 dueDate

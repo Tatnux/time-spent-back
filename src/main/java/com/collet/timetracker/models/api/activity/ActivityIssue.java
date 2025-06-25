@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public final class ActivityIssue {
+    private String id;
     private Issue issue;
     private List<Activity> activities = new ArrayList<>();
     private List<MergeRequest> mergeRequest = new ArrayList<>();

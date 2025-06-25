@@ -1,6 +1,8 @@
 package com.collet.timetracker.service;
 
 import com.collet.timetracker.models.api.iteration.IterationNode;
+import com.collet.timetracker.models.api.iteration.IterationSort;
+import com.collet.timetracker.models.api.iteration.IterationState;
 import com.collet.timetracker.models.api.timelogs.TimeLogNode;
 import com.collet.timetracker.models.api.user.GitlabUser;
 import com.collet.timetracker.models.api.user.GroupMemeber;
@@ -30,8 +32,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GitLabGraphQLService {
 
-    private static final String ITERATION_CLOSED = loadGraphQLQuery("iteration-closed");
-    private static final String ITERATION_CURRENT = loadGraphQLQuery("iteration-current");
+    private static final String ITERATION = loadGraphQLQuery("iteration");
     private static final String TIME_LOGS = loadGraphQLQuery("time-logs");
     private static final String TIME_LOGS_CREATE = loadGraphQLQuery("time-logs-create");
     private static final String USERS = loadGraphQLQuery("users");
@@ -56,13 +57,11 @@ public class GitLabGraphQLService {
                 .toList();
     }
 
-    public List<IterationNode> getClosedIteration(int first) {
-        return graphQLQuery(IterationNode.class, ITERATION_CLOSED, "iterations", Map.of(GROUP, this.group,
+    public List<IterationNode> getIteration(IterationState state, IterationSort sort, int first) {
+        return graphQLQuery(IterationNode.class, ITERATION, "iterations", Map.of(GROUP, this.group,
+                "state", state.toString(),
+                "sort", sort.toString(),
                 "first", first));
-    }
-
-    public List<IterationNode> getCurrentIteration() {
-        return graphQLQuery(IterationNode.class, ITERATION_CURRENT, "iterations", Map.of(GROUP, this.group));
     }
 
     public List<TimeLogNode> getTimeSpentNotes(String username, String startTime, String endTime) {

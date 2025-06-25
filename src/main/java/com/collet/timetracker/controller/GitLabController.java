@@ -2,6 +2,8 @@ package com.collet.timetracker.controller;
 
 import com.collet.timetracker.models.api.activity.ActivityIssue;
 import com.collet.timetracker.models.api.iteration.IterationNode;
+import com.collet.timetracker.models.api.iteration.IterationSort;
+import com.collet.timetracker.models.api.iteration.IterationState;
 import com.collet.timetracker.models.api.timelogs.TimeLogCreate;
 import com.collet.timetracker.models.api.timelogs.TimeLogNode;
 import com.collet.timetracker.models.api.user.GitlabUser;
@@ -47,12 +49,17 @@ public class GitLabController {
     }
 
     @GetMapping("/iteration/current")
-    public List<IterationNode> getCurrentIteration() {
-        return this.service.getCurrentIteration();
+    public List<IterationNode> getCurrentIteration(@RequestParam(defaultValue = "1") int first) {
+        return this.service.getIteration(IterationState.current, IterationSort.CADENCE_AND_DUE_DATE_DESC, first);
+    }
+
+    @GetMapping("/iteration/next")
+    public List<IterationNode> getUpComingIteration(@RequestParam(defaultValue = "1") int first) {
+        return this.service.getIteration(IterationState.upcoming, IterationSort.CADENCE_AND_DUE_DATE_ASC, first);
     }
 
     @GetMapping("/iteration/closed")
     public List<IterationNode> getClosedIteration(@RequestParam(defaultValue = "10") int first) {
-        return this.service.getClosedIteration(first);
+        return this.service.getIteration(IterationState.closed, IterationSort.CADENCE_AND_DUE_DATE_DESC, first);
     }
 }
