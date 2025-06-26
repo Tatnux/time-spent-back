@@ -1,8 +1,8 @@
-package com.collet.timetracker.service;
+package com.collet.timetracker.service.activity;
 
 import com.collet.timetracker.models.api.activity.Activity;
 import com.collet.timetracker.models.api.activity.ActivityIssue;
-import com.collet.timetracker.service.activity.ActivityResolver;
+import com.collet.timetracker.service.graphql.ReferenceQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,7 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class GitLabActivityService {
+public class ActivityService {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -28,14 +28,14 @@ public class GitLabActivityService {
     @Value("${spring.security.oauth2.client.provider.gitlab.api}")
     private String gitlabApi;
 
-    public Collection<ActivityIssue> getIssues(String userId, String inputDate) {
+    public Collection<ActivityIssue> getActivityIssues(String userId, String inputDate) {
         final ActivityResolver activityAssembler = new ActivityResolver(referenceQueryService);
 
-        List<Activity> activityList = this.getActivity(userId, inputDate);
+        List<Activity> activityList = this.getActivities(userId, inputDate);
         return activityAssembler.resolve(activityList);
     }
 
-    public List<Activity> getActivity(String userId, String inputDate) {
+    private List<Activity> getActivities(String userId, String inputDate) {
         LocalDate date = LocalDate.parse(inputDate, formatter);
 
         LocalDate after = date.minusDays(1);

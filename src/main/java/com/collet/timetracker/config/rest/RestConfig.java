@@ -1,8 +1,8 @@
-package com.collet.timetracker.config;
+package com.collet.timetracker.config.rest;
 
+import com.collet.timetracker.config.oauth2.OAuth2RestErrorHandler;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -40,7 +40,7 @@ public class RestConfig {
 
                     return execution.execute(request, body);
                 })
-                .errorHandler(new RestErrorHandler())
+                .errorHandler(new OAuth2RestErrorHandler())
                 .build();
     }
 

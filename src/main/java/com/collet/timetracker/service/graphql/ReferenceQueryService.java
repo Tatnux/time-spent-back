@@ -1,4 +1,4 @@
-package com.collet.timetracker.service;
+package com.collet.timetracker.service.graphql;
 
 import com.collet.timetracker.service.activity.reference.Reference;
 import com.collet.timetracker.service.activity.reference.ReferenceCollection;

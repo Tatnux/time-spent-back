@@ -1,40 +1,38 @@
 package com.collet.timetracker.controller;
 
 import com.collet.timetracker.models.api.user.GitlabUser;
+import com.collet.timetracker.service.UsersService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/user")
 @RequiredArgsConstructor
-public class UserController {
+@RequestMapping("/api/users")
+public class UsersController {
 
+    private final UsersService service;
     private final OAuth2AuthorizedClientService clientService;
-    private final RestTemplate restTemplate;
 
-    @Value("${spring.security.oauth2.client.provider.gitlab.api}")
-    private String gitlabApi;
+    @GetMapping
+    public List<GitlabUser> getUsers() {
+        return this.service.getUsers();
+    }
 
     @GetMapping("/me")
     public ResponseEntity<?> getGitlabUserInfo(OAuth2AuthenticationToken auth) {
         return ResponseEntity.ok(Map.of(
-            "id", Objects.requireNonNull(auth.getPrincipal().getAttribute("id")),
-            "username", Objects.requireNonNull(auth.getPrincipal().getAttribute("username"))
+                "id", Objects.requireNonNull(auth.getPrincipal().getAttribute("id")),
+                "username", Objects.requireNonNull(auth.getPrincipal().getAttribute("username"))
         ));
     }
 
@@ -47,4 +45,5 @@ public class UserController {
 
         return client.getAccessToken().getTokenValue();
     }
+
 }

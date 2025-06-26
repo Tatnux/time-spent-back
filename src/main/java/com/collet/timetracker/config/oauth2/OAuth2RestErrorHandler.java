@@ -1,4 +1,4 @@
-package com.collet.timetracker.config;
+package com.collet.timetracker.config.oauth2;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.net.URI;
 
-public class RestErrorHandler extends DefaultResponseErrorHandler {
+public class OAuth2RestErrorHandler extends DefaultResponseErrorHandler {
 
     @Override
     public void handleError(URI uri, HttpMethod method, ClientHttpResponse response) throws IOException {

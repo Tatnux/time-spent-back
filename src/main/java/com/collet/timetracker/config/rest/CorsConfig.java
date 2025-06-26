@@ -1,4 +1,4 @@
-package com.collet.timetracker.config;
+package com.collet.timetracker.config.rest;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

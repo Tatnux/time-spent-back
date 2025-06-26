@@ -1,4 +1,4 @@
-package com.collet.timetracker.config;
+package com.collet.timetracker.config.oauth2;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

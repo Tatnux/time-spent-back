@@ -1,4 +1,4 @@
-package com.collet.timetracker.controller;
+package com.collet.timetracker.config.rest;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
