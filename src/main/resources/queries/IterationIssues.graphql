@@ -1,0 +1,26 @@
+query ($group: ID!, $iteration: ID) {
+    group(fullPath: $group) {
+        issues(iterationId: [$iteration]) {
+            nodes {
+                id
+                iid
+                webUrl
+                state
+                projectId
+                title
+                moved
+                movedTo {
+                    id
+                }
+                assignees {
+                    nodes {
+                        id
+                        name
+                        username
+                    }
+                }
+
+            }
+        }
+    }
+}

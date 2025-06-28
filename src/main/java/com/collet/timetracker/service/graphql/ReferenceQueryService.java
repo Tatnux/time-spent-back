@@ -13,10 +13,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -61,13 +63,26 @@ public class ReferenceQueryService {
         // Split list to reduce complexity for each GraphQL request
         List<List<Reference<T>>> batches = splitList(list, 5);
 
+        // Executing the queries in parallel
+        multiThreadedBatches(batches, references -> buildAndExecuteQuery(map, clazz, references));
+
+        Duration duration = Duration.ofMillis(System.currentTimeMillis() - start);
+        long seconds = duration.getSeconds();
+        long millis = duration.toMillisPart();
+
+        LOG.info(() -> "Time : %d.%03d seconds".formatted(seconds, millis));
+
+    }
+
+    @SneakyThrows
+    private <T> void multiThreadedBatches(List<T> batches, Consumer<T> consumer) {
         try(ExecutorService rawExecutor = Executors.newFixedThreadPool(Math.min(batches.size(), 10))) {
             ExecutorService executor = new DelegatingSecurityContextExecutorService(rawExecutor);
             List<Future<Void>> futures = new ArrayList<>();
 
-            for (List<Reference<T>> referenceList : batches) {
+            for (T batch : batches) {
                 Callable<Void> task = () -> {
-                    buildAndExecuteQuery(map, clazz, referenceList);
+                    consumer.accept(batch);
                     return null;
                 };
                 futures.add(executor.submit(task));
@@ -76,55 +91,46 @@ public class ReferenceQueryService {
             for (Future<Void> future : futures) {
                 try {
                     future.get();
-                } catch (InterruptedException | ExecutionException e) {
+                } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    throw new RuntimeException("Erreur lors de l'exécution parallèle des requêtes GraphQL", e);
                 }
             }
 
             executor.shutdown();
         }
-
-        Duration duration = Duration.ofMillis(System.currentTimeMillis() - start);
-
-        long seconds = duration.getSeconds();
-        long millis = duration.toMillisPart(); // Java 9+
-
-        LOG.info(() -> "Time : %d.%03d seconds".formatted(seconds, millis));
-
     }
 
-    private <T> void buildAndExecuteQuery(Map<Reference<T>, List<Consumer<T>>> map, Class<T> clazz, List<Reference<T>> referenceList) throws JsonProcessingException {
+    @SneakyThrows
+    private <T> void buildAndExecuteQuery(Map<Reference<T>, List<Consumer<T>>> map, Class<T> clazz, List<Reference<T>> referenceList) {
         Map<String, List<IndexedReference<T>>> projectMap = toProjectMap(referenceList);
 
-        StringBuilder query = new StringBuilder("{\n");
-        StringBuilder groupQuery = new StringBuilder("group(fullPath: \"" + this.group + "\") {\n");
+        final StringBuilder rootQuery = new StringBuilder();
+        final StringBuilder groupQuery = new StringBuilder();
 
         AtomicInteger mapIndex = new AtomicInteger();
         projectMap.forEach((projectId, indexedReferences) -> {
-
             // Building the query
             StringBuilder referencesQuery = new StringBuilder();
             indexedReferences.forEach(ref ->
                     referencesQuery.append(ref.index()).append(":").append(ref.reference().graphQLQuery()));
 
-            // Adding it to the global query
+            // Adding it to the root query
             if (projectId == null) {
-                query.append(referencesQuery);
+                rootQuery.append(referencesQuery);
             } else {
                 groupQuery.append("p").append(mapIndex.getAndIncrement()).append(":")
                         .append(projectBlock(projectId, referencesQuery.toString()));
             }
         });
 
-        groupQuery.append("}");
-        if (groupQuery.length() > 23 + this.group.length()) {
-            // Adding the group query only if it has been updated
-            query.append(groupQuery);
+        // Add group's query only if it has content
+        if(!groupQuery.isEmpty()) {
+            rootQuery.append(groupBlock(this.group, groupQuery.toString()));
         }
-        query.append("}");
 
-        JsonNode result = this.objectMapper.readTree(this.graphQLService.graphQLQuery(query.toString(), Map.of()));
+        String query = rootQuery(rootQuery.toString());
+        JsonNode result = this.objectMapper.readTree(this.graphQLService.graphQLQuery(query, Map.of()));
+
         this.processResult(map, referenceList, clazz, result);
     }
 
@@ -196,6 +202,22 @@ public class ReferenceQueryService {
             parts.add(list.subList(i, Math.min(i + size, list.size())));
         }
         return parts;
+    }
+
+    private static String rootQuery(String content) {
+        return """
+                {
+                    %s
+                }
+                """.formatted(content);
+    }
+
+    private static String groupBlock(String fullPath, String content) {
+        return """
+                group(fullPath: "%s") {
+                    %s
+                }
+                """.formatted(fullPath, content);
     }
 
     private static String projectBlock(String id, String query) {

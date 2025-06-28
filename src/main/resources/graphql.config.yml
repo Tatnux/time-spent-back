@@ -1,2 +1,2 @@
-schema: gitlab_schema.json
+schema: schema/gitlab.graphqls
 documents: '**/*.graphql'

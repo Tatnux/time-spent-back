@@ -12,8 +12,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TimeLogsService {
 
-    private static final String TIME_LOGS = GitLabGraphQLService.loadGraphQLQuery("time-logs");
-    private static final String TIME_LOGS_CREATE = GitLabGraphQLService.loadGraphQLQuery("time-logs-create");
+    private static final String TIME_LOGS = GitLabGraphQLService.loadGraphQLQuery("TimeLogs");
+    private static final String TIME_LOGS_CREATE = GitLabGraphQLService.loadGraphQLQuery("TimeLogsCreate");
 
     private final GitLabGraphQLService graphQLService;
 

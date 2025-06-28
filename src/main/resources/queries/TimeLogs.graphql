@@ -1,0 +1,35 @@
+query ($group: ID!, $startTime: Time, $endTime: Time, $username: String) {
+    group(fullPath: $group) {
+        timelogs(startTime: $startTime, endTime: $endTime, username: $username) {
+            pageInfo {
+                hasNextPage
+                endCursor
+            }
+            nodes {
+                id
+                issue {
+                    id
+                    iid
+                    webUrl
+                    state
+                    projectId
+                    title
+                    moved
+                    movedTo {
+                        id
+                    }
+                    assignees {
+                        nodes {
+                            id
+                            name
+                            username
+                        }
+                    }
+                }
+                spentAt
+                timeSpent
+                summary
+            }
+        }
+    }
+}

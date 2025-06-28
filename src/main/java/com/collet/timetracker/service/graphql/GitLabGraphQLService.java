@@ -107,7 +107,7 @@ public class GitLabGraphQLService {
 
     @SneakyThrows
     public static String loadGraphQLQuery(String fileName) {
-        ClassPathResource resource = new ClassPathResource("graphql/%s.graphql".formatted(fileName));
+        ClassPathResource resource = new ClassPathResource("queries/%s.graphql".formatted(fileName));
         try (InputStream inputStream = resource.getInputStream()) {
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         }

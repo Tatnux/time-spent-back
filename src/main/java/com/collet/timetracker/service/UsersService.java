@@ -14,7 +14,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UsersService {
 
-    private static final String USERS = GitLabGraphQLService.loadGraphQLQuery("users");
+    private static final String USERS = GitLabGraphQLService.loadGraphQLQuery("Users");
 
     private final GitLabGraphQLService graphQLService;
 

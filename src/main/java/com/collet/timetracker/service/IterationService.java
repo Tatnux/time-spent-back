@@ -14,7 +14,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class IterationService {
 
-    private static final String ITERATION_QUERY = GitLabGraphQLService.loadGraphQLQuery("iteration");
+    private static final String ITERATION_QUERY = GitLabGraphQLService.loadGraphQLQuery("Iteration");
 
     private final GitLabGraphQLService graphQLService;
 
