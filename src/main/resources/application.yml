@@ -27,3 +27,14 @@ spring:
                         user-info-uri: https://gitlab.thalesdigital.io/api/v4/user
                         graphql: https://gitlab.thalesdigital.io/api/graphql
                         user-name-attribute: username
+
+    h2:
+        console:
+            enabled: true
+    datasource:
+        url: jdbc:h2:file:/data/demo
+        username: sa
+        password: password
+        driverClassName: org.h2.Driver
+    jpa:
+        database-platform: org.hibernate.dialect.H2Dialect

@@ -70,6 +70,9 @@ public class GitLabGraphQLService {
         return result;
     }
 
+    public Map<String, Object> getGroupMap() {
+        return getGroupMap(Collections.emptyMap());
+    }
     public Map<String, Object> getGroupMap(Map<String, Object> map) {
         map = new HashMap<>(map);
         map.put(GROUP, this.group);

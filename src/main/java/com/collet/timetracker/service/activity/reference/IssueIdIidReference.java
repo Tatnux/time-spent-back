@@ -1,6 +1,6 @@
 package com.collet.timetracker.service.activity.reference;
 
-import com.collet.timetracker.models.api.timelogs.Issue;
+import com.collet.timetracker.models.api.issue.Issue;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 

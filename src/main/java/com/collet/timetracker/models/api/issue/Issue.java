@@ -1,4 +1,4 @@
-package com.collet.timetracker.models.api.timelogs;
+package com.collet.timetracker.models.api.issue;
 
 import com.collet.timetracker.models.api.user.GitlabUser;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Accessors(fluent = true)
-public final class Issue {
+public class Issue {
     private String id;
     private int iid;
     private String title;

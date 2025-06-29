@@ -1,6 +1,6 @@
 query ($group: ID!, $iteration: ID) {
     group(fullPath: $group) {
-        issues(iterationId: [$iteration]) {
+        issues(iterationId: [$iteration], includeSubgroups: true) {
             nodes {
                 id
                 iid
@@ -9,6 +9,7 @@ query ($group: ID!, $iteration: ID) {
                 projectId
                 title
                 moved
+                closedAt
                 movedTo {
                     id
                 }
@@ -19,7 +20,28 @@ query ($group: ID!, $iteration: ID) {
                         username
                     }
                 }
-
+                labels {
+                    nodes {
+                        id
+                        title
+                        description
+                        color
+                        textColor
+                    }
+                }
+                timeEstimate
+                timelogs {
+                    nodes {
+                        id
+                        spentAt
+                        timeSpent
+                        user {
+                            id
+                            name
+                            username
+                        }
+                    }
+                }
             }
         }
     }

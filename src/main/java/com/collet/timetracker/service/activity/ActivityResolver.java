@@ -3,7 +3,7 @@ package com.collet.timetracker.service.activity;
 import com.collet.timetracker.models.api.activity.Activity;
 import com.collet.timetracker.models.api.activity.ActivityIssue;
 import com.collet.timetracker.models.api.activity.MergeRequest;
-import com.collet.timetracker.models.api.timelogs.Issue;
+import com.collet.timetracker.models.api.issue.Issue;
 import com.collet.timetracker.service.graphql.ReferenceQueryService;
 import com.collet.timetracker.service.activity.reference.IssueFullPathIidReference;
 import com.collet.timetracker.service.activity.reference.IssueIdIidReference;

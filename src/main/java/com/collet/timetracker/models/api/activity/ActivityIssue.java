@@ -1,6 +1,6 @@
 package com.collet.timetracker.models.api.activity;
 
-import com.collet.timetracker.models.api.timelogs.Issue;
+import com.collet.timetracker.models.api.issue.Issue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

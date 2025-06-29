@@ -1,11 +1,14 @@
 package com.collet.timetracker.controller;
 
+import com.collet.timetracker.models.api.issue.IterationIssue;
 import com.collet.timetracker.models.api.iteration.IterationNode;
 import com.collet.timetracker.models.api.iteration.IterationSort;
 import com.collet.timetracker.models.api.iteration.IterationState;
+import com.collet.timetracker.models.api.issue.Issue;
 import com.collet.timetracker.service.IterationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +35,11 @@ public class IterationController {
     @GetMapping("/closed")
     public List<IterationNode> getClosedIteration(@RequestParam(defaultValue = "10") int first) {
         return this.service.getIteration(IterationState.closed, IterationSort.CADENCE_AND_DUE_DATE_DESC, first);
+    }
+
+    @GetMapping("/{id}/issues")
+    public List<IterationIssue> getIterationIssues(@PathVariable String id) {
+        return this.service.getIterationIssues("gid://gitlab/Iteration/" + id);
     }
 
 }
