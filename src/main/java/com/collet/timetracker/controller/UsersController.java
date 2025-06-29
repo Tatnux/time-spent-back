@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,10 +31,14 @@ public class UsersController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getGitlabUserInfo(OAuth2AuthenticationToken auth) {
-        return ResponseEntity.ok(Map.of(
-                "id", Objects.requireNonNull(auth.getPrincipal().getAttribute("id")),
-                "username", Objects.requireNonNull(auth.getPrincipal().getAttribute("username"))
-        ));
+        Map<String, Object> attributes = auth.getPrincipal().getAttributes();
+
+        HashMap<String, Object> map = new HashMap<>(Map.of(
+                "id", Objects.requireNonNull(attributes.get("id")),
+                "avatarUrl", Objects.requireNonNull(attributes.get("avatar_url")),
+                "username", Objects.requireNonNull(attributes.get("username"))));
+
+        return ResponseEntity.ok(map);
     }
 
     @GetMapping("/token")
